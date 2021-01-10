@@ -9,9 +9,9 @@ But you can deploy https://github.com/r-mamchur/GCE_desktop_vm, there is everyth
 Terraform deploy infrascrukture - GKE cluster.   
 
 ***kube-conf*** will be genereted by terraform from template. It allows access to the cluster (with kubectl, istioctl and helm).   
-Copy it to `$HONE/.kube/config` or add `--kubeconfig="<Path>/kube-conf"` to command line.    
+Copy it to $HONE/.kube/config or add `--kubeconfig="<Path>/kube-conf"` to command line.    
 
-##### Istio deploy   
+#####Istio deploy   
 Look for details [https://istio.io/latest/docs/setup/getting-started](https://istio.io/latest/docs/setup/getting-started)   
 
 ```sh
@@ -27,17 +27,13 @@ Details:
 ```sh
 helm repo add stable https://kubernetes-charts.storage.googleapis.com
 
-helm install rocket stable/rocketchat  \   
-   --set replicaCount=3 \   
-   --set mongodb.mongodbUsername=rocketchat,mongodb.mongodbPassword=changeme,mongodb.mongodbDatabase=rocketchat,mongodb.mongodbRootPassword=root-changeme \    
-   --kubeconfig="./kube-conf"   
+helm install rocket --set mongodb.mongodbUsername=rocketchat,mongodb.mongodbPassword=changeme,mongodb.mongodbDatabase=rocketchat,mongodb.mongodbRootPassword=root-changeme  stable/rocketchat --kubeconfig="./kube-conf"    
 ```
 
 Open the application to outside traffic.    
 ```sh
 # Get IP
-export INGRESS_HOST=$(kubectl -n istio-system get service istio-ingressgateway \
-      -o jsonpath='{.status.loadBalancer.ingress[0].ip}')
+export INGRESS_HOST=$(kubectl -n istio-system get service istio-ingressgateway -o jsonpath='{.status.loadBalancer.ingress[0].ip}')
 
 echo $INGRESS_HOST
 
@@ -47,9 +43,7 @@ openssl req -newkey rsa:2048 -sha256 -nodes -keyout ./server.key \
      -subj "/C=UA/ST=Prykarpattia/L=Ivano-Frankivsk/O=Rohy i kopyta Inc./OU=Camel/CN=$INGRESS_HOST/emailAddress=r_mamchur@ukr.net"
 
 # Create a secret for the ingress gateway
-kubectl create -n istio-system secret tls rocket-credential \
-  --key=server.key \
-  --cert=server.crt
+kubectl create -n istio-system secret tls rocket-credential --key=server.key --cert=server.crt   
 
 # Configure a TLS ingress gateway -- http and https for test.     
 cat <<EOF | kubectl apply --kubeconfig=./kube-conf -f -  
