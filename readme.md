@@ -25,12 +25,12 @@ Details:
 [https://github.com/helm/charts/tree/master/stable/rocketchat](https://github.com/helm/charts/tree/master/stable/rocketchat)   
 
 ```sh
-helm repo add stable https://kubernetes-charts.storage.googleapis.com
+helm repo add stable https://charts.helm.sh/stable/
 
-helm install rocket stable/rocketchat  \   
-   --set replicaCount=3 \   
-   --set mongodb.mongodbUsername=rocketchat,mongodb.mongodbPassword=changeme,mongodb.mongodbDatabase=rocketchat,mongodb.mongodbRootPassword=root-changeme \    
-   --kubeconfig="./kube-conf"   
+helm install rocket stable/rocketchat  \
+   --set replicaCount=2 \
+   --set mongodb.mongodbUsername=rocketchat,mongodb.mongodbPassword=changeme,mongodb.mongodbDatabase=rocketchat,mongodb.mongodbRootPassword=root-changeme \
+   --kubeconfig="./kube-conf"
 ```
 
 Open the application to outside traffic.    
@@ -115,5 +115,6 @@ kubectl rollout status deployment/kiali -n istio-system
 
 ##### Note:
 If you want install Rocket Chat without istio, add _`ingress`_ and service have to be _`NodePort`_.     
-Add to command line
+Add to command line   
 `--set service.type=NodePort --set ingress.enabled=true `
+
